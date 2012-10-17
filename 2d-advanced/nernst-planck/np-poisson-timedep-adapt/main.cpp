@@ -197,9 +197,9 @@ int main (int argc, char* argv[]) {
   if (SCALED) {
     bool ret = basemesh.rescale(l, l);
     if (ret) {
-      Hermes::Mixins::Loggable::Static::info("SCALED mesh is used");
+      Hermes::Mixins::Loggable::static_info("SCALED mesh is used");
     } else {
-      Hermes::Mixins::Loggable::Static::info("UNSCALED mesh is used");
+      Hermes::Mixins::Loggable::static_info("UNSCALED mesh is used");
     }
   }
 
@@ -238,7 +238,7 @@ int main (int argc, char* argv[]) {
   if (TIME_DISCR == 2) {
     if (SCALED) {
       wf = new ScaledWeakFormPNPCranic(TAU, epsilon, &C_prev_time, &phi_prev_time);
-      Hermes::Mixins::Loggable::Static::info("Scaled weak form, with time step %g and epsilon %g", *TAU, epsilon);
+      Hermes::Mixins::Loggable::static_info("Scaled weak form, with time step %g and epsilon %g", *TAU, epsilon);
     } else {
       wf = new WeakFormPNPCranic(TAU, C0, K, L, D, &C_prev_time, &phi_prev_time);
     }
@@ -254,7 +254,7 @@ int main (int argc, char* argv[]) {
 
   // Project the initial condition on the FE space to obtain initial
   // coefficient vector for the Newton's method.
-  Hermes::Mixins::Loggable::Static::info("Projecting to obtain initial vector for the Newton's method.");
+  Hermes::Mixins::Loggable::static_info("Projecting to obtain initial vector for the Newton's method.");
   int ndof = Space<double>::get_num_dofs(Hermes::vector<const Space<double>*>(&C_space, &phi_space));
   double* coeff_vec_coarse = new double[ndof] ;
 
@@ -278,7 +278,7 @@ int main (int argc, char* argv[]) {
   phiordview.show(&phi_space);
 
   // Newton's loop on the coarse mesh.
-  Hermes::Mixins::Loggable::Static::info("Solving on initial coarse mesh");
+  Hermes::Mixins::Loggable::static_info("Solving on initial coarse mesh");
   try
   {
     solver_coarse->set_newton_max_iter(NEWTON_MAX_ITER);
@@ -307,7 +307,7 @@ int main (int argc, char* argv[]) {
   // Time stepping loop.
   PidTimestepController pid(scaleTime(T_FINAL), true, scaleTime(INIT_TAU));
   TAU = pid.timestep;
-  Hermes::Mixins::Loggable::Static::info("Starting time iteration with the step %g", *TAU);
+  Hermes::Mixins::Loggable::static_info("Starting time iteration with the step %g", *TAU);
 
 
   do {
@@ -315,7 +315,7 @@ int main (int argc, char* argv[]) {
     // Periodic global derefinements.
     if (pid.get_timestep_number() > 1 && pid.get_timestep_number() % UNREF_FREQ == 0)
     {
-      Hermes::Mixins::Loggable::Static::info("Global mesh derefinement.");
+      Hermes::Mixins::Loggable::static_info("Global mesh derefinement.");
       C_mesh.copy(&basemesh);
       if (MULTIMESH)
       {
@@ -330,7 +330,7 @@ int main (int argc, char* argv[]) {
     bool done = false; int as = 1;
     double err_est;
     do {
-      Hermes::Mixins::Loggable::Static::info("Time step %d, adaptivity step %d:", pid.get_timestep_number(), as);
+      Hermes::Mixins::Loggable::static_info("Time step %d, adaptivity step %d:", pid.get_timestep_number(), as);
 
       // Construct globally refined reference mesh
       // and setup reference space.
@@ -347,26 +347,26 @@ int main (int argc, char* argv[]) {
 
       // Calculate initial coefficient vector for Newton on the fine mesh.
       if (as == 1 && pid.get_timestep_number() == 1) {
-        Hermes::Mixins::Loggable::Static::info("Projecting coarse mesh solution to obtain coefficient vector on new fine mesh.");
+        Hermes::Mixins::Loggable::static_info("Projecting coarse mesh solution to obtain coefficient vector on new fine mesh.");
         OGProjection<double> ogProjection; ogProjection.project_global(ref_spaces_const,
               Hermes::vector<MeshFunction<double> *>(&C_sln, &phi_sln),
               coeff_vec);
       }
       else {
-        Hermes::Mixins::Loggable::Static::info("Projecting previous fine mesh solution to obtain coefficient vector on new fine mesh.");
+        Hermes::Mixins::Loggable::static_info("Projecting previous fine mesh solution to obtain coefficient vector on new fine mesh.");
         OGProjection<double> ogProjection; ogProjection.project_global(ref_spaces_const,
               Hermes::vector<MeshFunction<double> *>(&C_ref_sln, &phi_ref_sln),
               coeff_vec);
       }
       if (as > 1) {
         // Now deallocate the previous mesh
-        Hermes::Mixins::Loggable::Static::info("Delallocating the previous mesh");
+        Hermes::Mixins::Loggable::static_info("Delallocating the previous mesh");
         delete C_ref_sln.get_mesh();
         delete phi_ref_sln.get_mesh();
       }
 
       // Newton's loop on the fine mesh.
-      Hermes::Mixins::Loggable::Static::info("Solving on fine mesh:");
+      Hermes::Mixins::Loggable::static_info("Solving on fine mesh:");
       try
       {
         solver->set_newton_max_iter(NEWTON_MAX_ITER);
@@ -384,28 +384,28 @@ int main (int argc, char* argv[]) {
           Hermes::vector<Solution<double> *>(&C_ref_sln, &phi_ref_sln));
 
       // Projecting reference solution onto the coarse mesh
-      Hermes::Mixins::Loggable::Static::info("Projecting fine mesh solution on coarse mesh.");
+      Hermes::Mixins::Loggable::static_info("Projecting fine mesh solution on coarse mesh.");
       OGProjection<double> ogProjection; ogProjection.project_global(Hermes::vector<const Space<double> *>(&C_space, &phi_space),
           Hermes::vector<Solution<double> *>(&C_ref_sln, &phi_ref_sln),
           Hermes::vector<Solution<double> *>(&C_sln, &phi_sln),
           matrix_solver);
 
       // Calculate element errors and total error estimate.
-      Hermes::Mixins::Loggable::Static::info("Calculating error estimate.");
+      Hermes::Mixins::Loggable::static_info("Calculating error estimate.");
       Adapt<double>* adaptivity = new Adapt<double>(Hermes::vector<Space<double> *>(&C_space, &phi_space));
       Hermes::vector<double> err_est_rel;
       double err_est_rel_total = adaptivity->calc_err_est(Hermes::vector<Solution<double> *>(&C_sln, &phi_sln),
                                  Hermes::vector<Solution<double> *>(&C_ref_sln, &phi_ref_sln), &err_est_rel) * 100;
 
       // Report results.
-      Hermes::Mixins::Loggable::Static::info("ndof_coarse[0]: %d, ndof_fine[0]: %d",
+      Hermes::Mixins::Loggable::static_info("ndof_coarse[0]: %d, ndof_fine[0]: %d",
            C_space.get_num_dofs(), (*ref_spaces)[0]->get_num_dofs());
-      Hermes::Mixins::Loggable::Static::info("err_est_rel[0]: %g%%", err_est_rel[0]*100);
-      Hermes::Mixins::Loggable::Static::info("ndof_coarse[1]: %d, ndof_fine[1]: %d",
+      Hermes::Mixins::Loggable::static_info("err_est_rel[0]: %g%%", err_est_rel[0]*100);
+      Hermes::Mixins::Loggable::static_info("ndof_coarse[1]: %d, ndof_fine[1]: %d",
            phi_space.get_num_dofs(), (*ref_spaces)[1]->get_num_dofs());
-      Hermes::Mixins::Loggable::Static::info("err_est_rel[1]: %g%%", err_est_rel[1]*100);
+      Hermes::Mixins::Loggable::static_info("err_est_rel[1]: %g%%", err_est_rel[1]*100);
       // Report results.
-      Hermes::Mixins::Loggable::Static::info("ndof_coarse_total: %d, ndof_fine_total: %d, err_est_rel: %g%%", 
+      Hermes::Mixins::Loggable::static_info("ndof_coarse_total: %d, ndof_fine_total: %d, err_est_rel: %g%%", 
            Space<double>::get_num_dofs(Hermes::vector<const Space<double> *>(&C_space, &phi_space)),
                Space<double>::get_num_dofs(ref_spaces_const), err_est_rel_total);
 
@@ -413,11 +413,11 @@ int main (int argc, char* argv[]) {
       if (err_est_rel_total < ERR_STOP) done = true;
       else 
       {
-        Hermes::Mixins::Loggable::Static::info("Adapting the coarse mesh.");
+        Hermes::Mixins::Loggable::static_info("Adapting the coarse mesh.");
         done = adaptivity->adapt(Hermes::vector<Selector<double> *>(&selector, &selector),
           THRESHOLD, STRATEGY, MESH_REGULARITY);
         
-        Hermes::Mixins::Loggable::Static::info("Adapted...");
+        Hermes::Mixins::Loggable::static_info("Adapted...");
 
         if (Space<double>::get_num_dofs(Hermes::vector<const Space<double> *>(&C_space, &phi_space)) >= NDOF_STOP)
           done = true;
@@ -425,7 +425,7 @@ int main (int argc, char* argv[]) {
       }
 
       // Visualize the solution and mesh.
-      Hermes::Mixins::Loggable::Static::info("Visualization procedures: C");
+      Hermes::Mixins::Loggable::static_info("Visualization procedures: C");
       char title[100];
       sprintf(title, "Solution[C], step# %d, step size %g, time %g, phys time %g",
           pid.get_timestep_number(), *TAU, pid.get_time(), physTime(pid.get_time()));
@@ -436,7 +436,7 @@ int main (int argc, char* argv[]) {
       Cordview.set_title(title);
       Cordview.show(&C_space);
       
-      Hermes::Mixins::Loggable::Static::info("Visualization procedures: phi");
+      Hermes::Mixins::Loggable::static_info("Visualization procedures: phi");
       sprintf(title, "Solution[phi], step# %d, step size %g, time %g, phys time %g",
           pid.get_timestep_number(), *TAU, pid.get_time(), physTime(pid.get_time()));
       phiview.set_title(title);

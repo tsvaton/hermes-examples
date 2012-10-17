@@ -155,7 +155,7 @@ int main(int argc, char* argv[])
   int as = 1; bool done = false;
   do
   {
-    Hermes::Mixins::Loggable::Static::info("---- Adaptivity step %d (%d DOF):", as, space.get_num_dofs());
+    Hermes::Mixins::Loggable::static_info("---- Adaptivity step %d (%d DOF):", as, space.get_num_dofs());
     cpu_time.tick();
 
     // Assemble the discrete problem.    
@@ -182,7 +182,7 @@ int main(int argc, char* argv[])
     Solution<double>::vector_to_solution(newton.get_sln_vector(), &space, &sln);
     
     cpu_time.tick();
-    Hermes::Mixins::Loggable::Static::info("Solution: %g s", cpu_time.last());
+    Hermes::Mixins::Loggable::static_info("Solution: %g s", cpu_time.last());
     
     // Calculate element errors and total error estimate.
     Hermes::Hermes2D::BasicKellyAdapt<double> adaptivity(&space);
@@ -197,9 +197,9 @@ int main(int argc, char* argv[])
     double err_exact_rel = Global<double>::calc_rel_error(&sln, &exact, HERMES_H1_NORM) * 100;
     
     cpu_time.tick();
-    Hermes::Mixins::Loggable::Static::info("Error calculation: %g s", cpu_time.last());
+    Hermes::Mixins::Loggable::static_info("Error calculation: %g s", cpu_time.last());
     
-    Hermes::Mixins::Loggable::Static::info("err_est_rel: %g%%, err_exact_rel: %g%%", err_est_rel, err_exact_rel);
+    Hermes::Mixins::Loggable::static_info("err_est_rel: %g%%, err_exact_rel: %g%%", err_est_rel, err_exact_rel);
 
     if (TEST_ELEMENT_BASED_KELLY)
     {
@@ -222,11 +222,11 @@ int main(int argc, char* argv[])
       double err_est_rel2 = adaptivity2.calc_err_est(&sln) * 100;  
       double err_exact_rel2 = adaptivity2.calc_err_exact(&sln, &exact, false) * 100;
       
-      Hermes::Mixins::Loggable::Static::info("err_est_rel_2: %g%%, err_exact_rel_2: %g%%", err_est_rel2, err_exact_rel2);
+      Hermes::Mixins::Loggable::static_info("err_est_rel_2: %g%%, err_exact_rel_2: %g%%", err_est_rel2, err_exact_rel2);
       
       if (fabs(err_est_rel2 - err_est_rel) >= 1e-13 || fabs(err_exact_rel2 - err_exact_rel) >= 1e-13)
       {
-        Hermes::Mixins::Loggable::Static::info("err_est_rel diff: %1.15g, err_exact_rel diff: %1.15g", 
+        Hermes::Mixins::Loggable::static_info("err_est_rel diff: %1.15g, err_exact_rel diff: %1.15g", 
         std::abs(err_est_rel2 - err_est_rel), std::abs(err_exact_rel2 - err_exact_rel));
         err_est_rel = err_exact_rel = 0; // Exit the adaptivity loop.
       }
@@ -263,7 +263,7 @@ int main(int argc, char* argv[])
       done = adaptivity.adapt(THRESHOLD, STRATEGY, MESH_REGULARITY);
     
     cpu_time.tick();
-    Hermes::Mixins::Loggable::Static::info("Adaptation: %g s", cpu_time.last());
+    Hermes::Mixins::Loggable::static_info("Adaptation: %g s", cpu_time.last());
     
     // Increase the counter of performed adaptivity steps.
     if (done == false)  
@@ -272,7 +272,7 @@ int main(int argc, char* argv[])
     {
       sview.show(&sln);
       oview.show(&space);
-      Hermes::Mixins::Loggable::Static::info("err_est_rel: %g%%, err_exact_rel: %g%%", err_est_rel, err_exact_rel);
+      Hermes::Mixins::Loggable::static_info("err_est_rel: %g%%, err_exact_rel: %g%%", err_est_rel, err_exact_rel);
     }
 */
     // Clean up.
@@ -281,7 +281,7 @@ int main(int argc, char* argv[])
   while (done == false);
 
   cpu_time.tick();
-  Hermes::Mixins::Loggable::Static::info("Total running time: %g s", cpu_time.accumulated());
+  Hermes::Mixins::Loggable::static_info("Total running time: %g s", cpu_time.accumulated());
 
   // Wait for all views to be closed.
   Views::View::wait();

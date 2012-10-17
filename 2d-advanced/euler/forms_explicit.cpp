@@ -87,7 +87,7 @@ public:
       add_vector_form_surf(new EulerEquationsLinearFormSolidWall(3, solid_wall_top_marker, kappa));
     }
     else
-      Hermes::Mixins::Loggable::Static::warn("Are you sure that solid wall top and bottom markers should coincide?");
+      Hermes::Mixins::Loggable::static_warn("Are you sure that solid wall top and bottom markers should coincide?");
 
     add_vector_form_surf(new EulerEquationsLinearFormInlet(0, inlet_marker, kappa));
     add_vector_form_surf(new EulerEquationsLinearFormInlet(1, inlet_marker, kappa));
@@ -742,7 +742,7 @@ public:
       add_matrix_form_surf(new EulerEquationsMatrixFormSolidWall(3, 3, solid_wall_top_marker, kappa));
     }
     else
-      Hermes::Mixins::Loggable::Static::warn("Are you sure that solid wall top and bottom markers should coincide?");
+      Hermes::Mixins::Loggable::static_warn("Are you sure that solid wall top and bottom markers should coincide?");
 
     add_matrix_form_surf(new EulerEquationsMatrixFormSemiImplicitInletOutlet(0, 0, inlet_marker, kappa));
     add_matrix_form_surf(new EulerEquationsMatrixFormSemiImplicitInletOutlet(1, 0, inlet_marker, kappa));

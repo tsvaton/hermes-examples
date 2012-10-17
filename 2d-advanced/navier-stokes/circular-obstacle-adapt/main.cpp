@@ -176,7 +176,7 @@ int main(int argc, char* argv[])
 
   // Calculate and report the number of degrees of freedom.
   int ndof = Space<double>::get_num_dofs(spaces);
-  Hermes::Mixins::Loggable::Static::info("ndof = %d.", ndof);
+  Hermes::Mixins::Loggable::static_info("ndof = %d.", ndof);
 
   // Define projection norms.
   ProjNormType vel_proj_norm = HERMES_H1_NORM;
@@ -187,7 +187,7 @@ int main(int argc, char* argv[])
 #endif
 
   // Solutions for the Newton's iteration and time stepping.
-  Hermes::Mixins::Loggable::Static::info("Setting initial conditions.");
+  Hermes::Mixins::Loggable::static_info("Setting initial conditions.");
   Solution<double> xvel_ref_sln, yvel_ref_sln, p_ref_sln;
 
   // Define initial conditions on the coarse mesh.
@@ -223,15 +223,15 @@ int main(int argc, char* argv[])
   for(int ts = 1; ts <= num_time_steps; ts++)
   {
     current_time += TAU;
-    Hermes::Mixins::Loggable::Static::info("---- Time step %d, time = %g:", ts, current_time);
+    Hermes::Mixins::Loggable::static_info("---- Time step %d, time = %g:", ts, current_time);
 
     // Update time-dependent essential BCs.
-    Hermes::Mixins::Loggable::Static::info("Updating time-dependent essential BC.");
+    Hermes::Mixins::Loggable::static_info("Updating time-dependent essential BC.");
     Space<double>::update_essential_bc_values(Hermes::vector<Space<double>*>(&xvel_space, &yvel_space, &p_space), current_time);
 
     // Periodic global derefinements.
     if (ts > 1 && ts % UNREF_FREQ == 0) {
-      Hermes::Mixins::Loggable::Static::info("Global mesh derefinement.");
+      Hermes::Mixins::Loggable::static_info("Global mesh derefinement.");
       mesh.copy(&basemesh);
       xvel_space.set_uniform_order(P_INIT_VEL);
       yvel_space.set_uniform_order(P_INIT_VEL);
@@ -246,7 +246,7 @@ int main(int argc, char* argv[])
     bool done = false; int as = 1;
     double err_est;
     do {
-      Hermes::Mixins::Loggable::Static::info("Time step %d, adaptivity step %d:", ts, as);
+      Hermes::Mixins::Loggable::static_info("Time step %d, adaptivity step %d:", ts, as);
 
       // Construct globally refined reference mesh
       // and setup reference space.
@@ -259,18 +259,18 @@ int main(int argc, char* argv[])
       double* coeff_vec = new double[Space<double>::get_num_dofs(ref_spaces_const)];
 
       if (ts == 1) {
-        Hermes::Mixins::Loggable::Static::info("Projecting coarse mesh solution to obtain coefficient vector on new fine mesh.");
+        Hermes::Mixins::Loggable::static_info("Projecting coarse mesh solution to obtain coefficient vector on new fine mesh.");
         OGProjection<double> ogProj; ogProj.project_global(ref_spaces_const, Hermes::vector<MeshFunction<double>*>(&xvel_sln, &yvel_sln, &p_sln), 
                       coeff_vec);
       }
       else {
-        Hermes::Mixins::Loggable::Static::info("Projecting previous fine mesh solution to obtain coefficient vector on new fine mesh.");
+        Hermes::Mixins::Loggable::static_info("Projecting previous fine mesh solution to obtain coefficient vector on new fine mesh.");
         OGProjection<double> ogProj; ogProj.project_global(ref_spaces_const, Hermes::vector<MeshFunction<double>*>(&xvel_ref_sln, &yvel_ref_sln, &p_ref_sln), 
             coeff_vec);
       }
 
       // Perform Newton's iteration.
-      Hermes::Mixins::Loggable::Static::info("Solving nonlinear problem:");
+      Hermes::Mixins::Loggable::static_info("Solving nonlinear problem:");
       try
       {
         newton.set_spaces(ref_spaces_const);
@@ -287,14 +287,14 @@ int main(int argc, char* argv[])
       Solution<double>::vector_to_solutions(newton.get_sln_vector(), ref_spaces_const, Hermes::vector<Solution<double>*>(&xvel_ref_sln, &yvel_ref_sln, &p_ref_sln));
        
       // Project the fine mesh solution onto the coarse mesh.
-      Hermes::Mixins::Loggable::Static::info("Projecting reference solution on coarse mesh.");
+      Hermes::Mixins::Loggable::static_info("Projecting reference solution on coarse mesh.");
       OGProjection<double> ogProj; ogProj.project_global(Hermes::vector<const Space<double>*>(&xvel_space, &yvel_space, &p_space), 
           Hermes::vector<Solution<double>*>(&xvel_ref_sln, &yvel_ref_sln, &p_ref_sln), 
           Hermes::vector<Solution<double>*>(&xvel_sln, &yvel_sln, &p_sln), 
           Hermes::vector<ProjNormType>(vel_proj_norm, vel_proj_norm, p_proj_norm) );
 
       // Calculate element errors and total error estimate.
-      Hermes::Mixins::Loggable::Static::info("Calculating error estimate.");
+      Hermes::Mixins::Loggable::static_info("Calculating error estimate.");
       //Adapt<double>* adaptivity = new Adapt<double>(ref_spaces_const);
       Adapt<double>* adaptivity = new Adapt<double>(Hermes::vector<Space<double>*>(&xvel_space, &yvel_space, &p_space));
 
@@ -302,7 +302,7 @@ int main(int argc, char* argv[])
                                  Hermes::vector<Solution<double>*>(&xvel_ref_sln, &yvel_ref_sln, &p_ref_sln)) * 100.;
 
       // Report results.
-      Hermes::Mixins::Loggable::Static::info("ndof: %d, ref_ndof: %d, err_est_rel: %g%%", 
+      Hermes::Mixins::Loggable::static_info("ndof: %d, ref_ndof: %d, err_est_rel: %g%%", 
            Space<double>::get_num_dofs(Hermes::vector<const Space<double>*>(&xvel_space, &yvel_space, &p_space)), 
            Space<double>::get_num_dofs(ref_spaces_const), err_est_rel_total);
 
@@ -310,7 +310,7 @@ int main(int argc, char* argv[])
       if (err_est_rel_total < ERR_STOP) done = true;
       else 
       {
-        Hermes::Mixins::Loggable::Static::info("Adapting the coarse mesh.");
+        Hermes::Mixins::Loggable::static_info("Adapting the coarse mesh.");
         done = adaptivity->adapt(Hermes::vector<RefinementSelectors::Selector<double> *>(&selector, &selector, &selector), 
                                  THRESHOLD, STRATEGY, MESH_REGULARITY);
 
@@ -342,7 +342,7 @@ int main(int argc, char* argv[])
   }
 
   ndof = Space<double>::get_num_dofs(Hermes::vector<const Space<double>*>(&xvel_space, &yvel_space, &p_space));
-  Hermes::Mixins::Loggable::Static::info("ndof = %d", ndof);
+  Hermes::Mixins::Loggable::static_info("ndof = %d", ndof);
 
   // Wait for all views to be closed.
   View::wait();

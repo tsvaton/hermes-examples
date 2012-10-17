@@ -163,7 +163,7 @@ int main(int argc, char* argv[])
   int as = 1; bool done = false;
   do
   {
-    Hermes::Mixins::Loggable::Static::info("---- Adaptivity step %d:", as);
+    Hermes::Mixins::Loggable::static_info("---- Adaptivity step %d:", as);
     
     // Time measurement.
     cpu_time.tick();
@@ -173,7 +173,7 @@ int main(int argc, char* argv[])
     int ndof_ref = ref_space->get_num_dofs();
 
     // Initialize fine mesh problem.
-    Hermes::Mixins::Loggable::Static::info("Solving on fine mesh.");
+    Hermes::Mixins::Loggable::static_info("Solving on fine mesh.");
     DiscreteProblem<double> dp(&wf, ref_space);
     
     NewtonSolver<double> newton(&dp);
@@ -194,7 +194,7 @@ int main(int argc, char* argv[])
     Solution<double>::vector_to_solution(newton.get_sln_vector(), ref_space, &ref_sln);
     
     // Project the fine mesh solution onto the coarse mesh.
-    Hermes::Mixins::Loggable::Static::info("Projecting fine mesh solution on coarse mesh.");
+    Hermes::Mixins::Loggable::static_info("Projecting fine mesh solution on coarse mesh.");
     OGProjection<double> ogProjection; ogProjection.project_global(&space, &ref_sln, &sln);
 
     // Time measurement.
@@ -208,14 +208,14 @@ int main(int argc, char* argv[])
     cpu_time.tick(Hermes::Mixins::TimeMeasurable::HERMES_SKIP);
 
     // Calculate element errors and total error estimate.
-    Hermes::Mixins::Loggable::Static::info("Calculating error estimate.");
+    Hermes::Mixins::Loggable::static_info("Calculating error estimate.");
     Adapt<double> adaptivity(&space);
     bool solutions_for_adapt = true;
     double err_est_rel = adaptivity.calc_err_est(&sln, &ref_sln, solutions_for_adapt,
                          HERMES_TOTAL_ERROR_REL | HERMES_ELEMENT_ERROR_REL) * 100;
 
     // Report results.
-    Hermes::Mixins::Loggable::Static::info("ndof_coarse: %d, ndof_fine: %d, err_est_rel: %g%%",
+    Hermes::Mixins::Loggable::static_info("ndof_coarse: %d, ndof_fine: %d, err_est_rel: %g%%",
       space.get_num_dofs(), ref_space->get_num_dofs(), err_est_rel);
 
     // Add entry to DOF and CPU convergence graphs.
@@ -233,7 +233,7 @@ int main(int argc, char* argv[])
       done = true;
     else
     {
-      Hermes::Mixins::Loggable::Static::info("Adapting coarse mesh.");
+      Hermes::Mixins::Loggable::static_info("Adapting coarse mesh.");
       done = adaptivity.adapt(&selector, THRESHOLD, STRATEGY, MESH_REGULARITY);
 
       // Increase the counter of performed adaptivity steps.
@@ -252,7 +252,7 @@ int main(int argc, char* argv[])
   }
   while (done == false);
 
-  Hermes::Mixins::Loggable::Static::info("Total running time: %g s", cpu_time.accumulated());
+  Hermes::Mixins::Loggable::static_info("Total running time: %g s", cpu_time.accumulated());
 
   // Show the fine mesh solution - final result.
   sview.set_title("Fine mesh solution");

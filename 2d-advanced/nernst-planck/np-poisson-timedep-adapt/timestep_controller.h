@@ -54,14 +54,14 @@ const double PidTimestepController::kD = 0.01;
 void PidTimestepController::begin_step() {
 
   if ((time + (*timestep)) >= final_time) {
-   Hermes::Mixins::Loggable::Static::info("Time step would exceed the final time... reducing");
+   Hermes::Mixins::Loggable::static_info("Time step would exceed the final time... reducing");
     (*timestep) = final_time - time;
-   Hermes::Mixins::Loggable::Static::info("The last time step: %g", *timestep);
+   Hermes::Mixins::Loggable::static_info("The last time step: %g", *timestep);
     finished = true;
   }
   time += (*timestep);
   step_number++;
- Hermes::Mixins::Loggable::Static::info("begin_step processed, new step number: %i and cumulative time: %g", step_number, time);
+ Hermes::Mixins::Loggable::static_info("begin_step processed, new step number: %i and cumulative time: %g", step_number, time);
 }
 
 bool PidTimestepController::end_step(Hermes::vector<Solution<double> *> solutions,
@@ -85,7 +85,7 @@ bool PidTimestepController::end_step(Hermes::vector<Solution<double> *> solution
       double rel_error = Global<double>::calc_rel_error(solutions[i], prev_solutions[i], HERMES_H1_NORM);
       max_rel_error = (rel_error > max_rel_error) ? rel_error : max_rel_error;
 
-     Hermes::Mixins::Loggable::Static::info("Solution[%i]: rel error %g, largest relative error %g",
+     Hermes::Mixins::Loggable::static_info("Solution[%i]: rel error %g, largest relative error %g",
           i, rel_error, max_rel_error);
     }
 
@@ -93,13 +93,13 @@ bool PidTimestepController::end_step(Hermes::vector<Solution<double> *> solution
 
     if (err_vector.size() > 2 && max_rel_error <= delta) {
       int size = err_vector.size();
-     Hermes::Mixins::Loggable::Static::info("Error vector sufficient for adapting...");
+     Hermes::Mixins::Loggable::static_info("Error vector sufficient for adapting...");
       double t_coeff = Hermes::pow(err_vector.at(size - 2)/err_vector.at(size-1),kp)
           * Hermes::pow(0.25/err_vector.at(size - 1), kl)
           * Hermes::pow(err_vector.at(size - 2)*err_vector.at(size - 2)/(err_vector.at(size -1)*err_vector.at(size-3)), kD);
-      Hermes::Mixins::Loggable::Static::info("Coefficient %g", t_coeff);
+      Hermes::Mixins::Loggable::static_info("Coefficient %g", t_coeff);
        (*timestep) = (*timestep)*t_coeff;
-      Hermes::Mixins::Loggable::Static::info("New time step: %g", *timestep);
+      Hermes::Mixins::Loggable::static_info("New time step: %g", *timestep);
     }
   } // end pid
 

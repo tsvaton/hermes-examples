@@ -166,10 +166,10 @@ int main(int argc, char* argv[])
     Space<double>* ref_space = Space<double>::construct_refined_space(&space, 1);
     int ndof_ref = ref_space->get_num_dofs();
 
-    Hermes::Mixins::Loggable::Static::info("---- Adaptivity step %d (%d DOF):", as, ndof_ref);
+    Hermes::Mixins::Loggable::static_info("---- Adaptivity step %d (%d DOF):", as, ndof_ref);
     cpu_time.tick();
     
-    Hermes::Mixins::Loggable::Static::info("Solving on reference mesh.");
+    Hermes::Mixins::Loggable::static_info("Solving on reference mesh.");
     
     // Assemble the discrete problem.    
     DiscreteProblem<double> dp(&wf, ref_space);
@@ -192,10 +192,10 @@ int main(int argc, char* argv[])
     Solution<double>::vector_to_solution(newton.get_sln_vector(), ref_space, &ref_sln);
     
     cpu_time.tick();
-    Hermes::Mixins::Loggable::Static::info("Solution: %g s", cpu_time.last());
+    Hermes::Mixins::Loggable::static_info("Solution: %g s", cpu_time.last());
     
     // Project the fine mesh solution onto the coarse mesh.
-    Hermes::Mixins::Loggable::Static::info("Calculating error estimate and exact error.");
+    Hermes::Mixins::Loggable::static_info("Calculating error estimate and exact error.");
     OGProjection<double> ogProjection; ogProjection.project_global(&space, &ref_sln, &sln);
 
     // Calculate element errors and total error estimate.
@@ -206,11 +206,11 @@ int main(int argc, char* argv[])
     double err_exact_rel = Global<double>::calc_rel_error(&sln, &exact_sln, HERMES_H1_NORM) * 100;
 
     cpu_time.tick();
-    Hermes::Mixins::Loggable::Static::info("Error calculation: %g s", cpu_time.last());
+    Hermes::Mixins::Loggable::static_info("Error calculation: %g s", cpu_time.last());
     
     // Report results.
-    Hermes::Mixins::Loggable::Static::info("ndof_coarse: %d, ndof_fine: %d", space.get_num_dofs(), ref_space->get_num_dofs());
-    Hermes::Mixins::Loggable::Static::info("err_est_rel: %g%%, err_exact_rel: %g%%", err_est_rel, err_exact_rel);
+    Hermes::Mixins::Loggable::static_info("ndof_coarse: %d, ndof_fine: %d", space.get_num_dofs(), ref_space->get_num_dofs());
+    Hermes::Mixins::Loggable::static_info("err_est_rel: %g%%, err_exact_rel: %g%%", err_est_rel, err_exact_rel);
 
     // Time measurement.
     cpu_time.tick();
@@ -240,7 +240,7 @@ int main(int argc, char* argv[])
       done = adaptivity.adapt(&selector, THRESHOLD, STRATEGY, MESH_REGULARITY);
    
     cpu_time.tick();
-    Hermes::Mixins::Loggable::Static::info("Adaptation: %g s", cpu_time.last());
+    Hermes::Mixins::Loggable::static_info("Adaptation: %g s", cpu_time.last());
     
     // Increase the counter of adaptivity steps.
     if (done == false)  
@@ -251,7 +251,7 @@ int main(int argc, char* argv[])
   }
   while (done == false);
   
-  Hermes::Mixins::Loggable::Static::info("Total running time: %g s", cpu_time.accumulated());
+  Hermes::Mixins::Loggable::static_info("Total running time: %g s", cpu_time.accumulated());
 
   // Wait for all views to be closed.
   Views::View::wait();

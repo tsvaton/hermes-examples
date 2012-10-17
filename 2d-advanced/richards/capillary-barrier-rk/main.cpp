@@ -173,7 +173,7 @@ int main(int argc, char* argv[])
   // The van Genuchten + Mualem K(h) function is approximated by polynomials close 
   // to zero in case of CONSTITUTIVE_TABLE_METHOD==1.
   // In case of CONSTITUTIVE_TABLE_METHOD==2, all constitutive functions are approximated by polynomials.
-  Hermes::Mixins::Loggable::Static::info("Initializing polynomial approximations.");
+  Hermes::Mixins::Loggable::static_info("Initializing polynomial approximations.");
   for (int i=0; i < MATERIAL_COUNT; i++)
   {
     // Points to be used for polynomial approximation of K(h).
@@ -192,9 +192,9 @@ int main(int argc, char* argv[])
   
   // Choose a Butcher's table or define your own.
   ButcherTable bt(butcher_table_type);
-  if (bt.is_explicit()) Hermes::Mixins::Loggable::Static::info("Using a %d-stage explicit R-K method.", bt.get_size());
-  if (bt.is_diagonally_implicit()) Hermes::Mixins::Loggable::Static::info("Using a %d-stage diagonally implicit R-K method.", bt.get_size());
-  if (bt.is_fully_implicit()) Hermes::Mixins::Loggable::Static::info("Using a %d-stage fully implicit R-K method.", bt.get_size());
+  if (bt.is_explicit()) Hermes::Mixins::Loggable::static_info("Using a %d-stage explicit R-K method.", bt.get_size());
+  if (bt.is_diagonally_implicit()) Hermes::Mixins::Loggable::static_info("Using a %d-stage diagonally implicit R-K method.", bt.get_size());
+  if (bt.is_fully_implicit()) Hermes::Mixins::Loggable::static_info("Using a %d-stage fully implicit R-K method.", bt.get_size());
 
   // Load the mesh.
   Mesh mesh, basemesh;
@@ -213,7 +213,7 @@ int main(int argc, char* argv[])
   // Create an H1 space with default shapeset.
   H1Space<double> space(&mesh, &bcs, P_INIT);
   int ndof = space.get_num_dofs();
-  Hermes::Mixins::Loggable::Static::info("ndof = %d.", ndof);
+  Hermes::Mixins::Loggable::static_info("ndof = %d.", ndof);
 
   // Convert initial condition into a Solution.
   ZeroSolution<double> h_time_prev(&mesh), h_time_new(&mesh), time_error_fn(&mesh);
@@ -240,7 +240,7 @@ int main(int argc, char* argv[])
 
   // Graph for time step history.
   SimpleGraph time_step_graph;
-  Hermes::Mixins::Loggable::Static::info("Time step history will be saved to file time_step_history.dat.");
+  Hermes::Mixins::Loggable::static_info("Time step history will be saved to file time_step_history.dat.");
 
   // Initialize Runge-Kutta time stepping.
   RungeKutta<double> runge_kutta(&wf, &space, &bt);
@@ -250,12 +250,12 @@ int main(int argc, char* argv[])
   int ts = 1;
   do 
   {
-    Hermes::Mixins::Loggable::Static::info("---- Time step %d, time %3.5f s", ts, current_time);
+    Hermes::Mixins::Loggable::static_info("---- Time step %d, time %3.5f s", ts, current_time);
 
     Space<double>::update_essential_bc_values(&space, current_time);
 
     // Perform one Runge-Kutta time step according to the selected Butcher's table.
-    Hermes::Mixins::Loggable::Static::info("Runge-Kutta time step (t = %g s, time step = %g s, stages: %d).", 
+    Hermes::Mixins::Loggable::static_info("Runge-Kutta time step (t = %g s, time step = %g s, stages: %d).", 
          current_time, time_step, bt.get_size());
     try
     {
@@ -268,7 +268,7 @@ int main(int argc, char* argv[])
     }
     catch(Exceptions::Exception& e)
     {
-      Hermes::Mixins::Loggable::Static::info("Runge-Kutta time step failed, decreasing time step size from %g to %g days.", 
+      Hermes::Mixins::Loggable::static_info("Runge-Kutta time step failed, decreasing time step size from %g to %g days.", 
            time_step, time_step * time_step_dec);
       time_step *= time_step_dec;
       if (time_step < time_step_min) 
@@ -291,15 +291,15 @@ int main(int argc, char* argv[])
     // check is run, and if the relative error is very low, time step 
     // is increased.
     double rel_err_time = Global<double>::calc_norm(&time_error_fn, HERMES_H1_NORM) / Global<double>::calc_norm(&h_time_new, HERMES_H1_NORM) * 100;
-    Hermes::Mixins::Loggable::Static::info("rel_err_time = %g%%", rel_err_time);
+    Hermes::Mixins::Loggable::static_info("rel_err_time = %g%%", rel_err_time);
     if (rel_err_time > time_tol_upper) {
-      Hermes::Mixins::Loggable::Static::info("rel_err_time above upper limit %g%% -> decreasing time step from %g to %g days and repeating time step.", 
+      Hermes::Mixins::Loggable::static_info("rel_err_time above upper limit %g%% -> decreasing time step from %g to %g days and repeating time step.", 
            time_tol_upper, time_step, time_step * time_step_dec);
       time_step *= time_step_dec;
       continue;
     }
     if (rel_err_time < time_tol_lower) {
-      Hermes::Mixins::Loggable::Static::info("rel_err_time = below lower limit %g%% -> increasing time step from %g to %g days", 
+      Hermes::Mixins::Loggable::static_info("rel_err_time = below lower limit %g%% -> increasing time step from %g to %g days", 
            time_tol_lower, time_step, time_step * time_step_inc);
       time_step *= time_step_inc;
     }
@@ -321,7 +321,7 @@ int main(int argc, char* argv[])
     char filename[100];
     sprintf(filename, "outputs/tsln_%f.dat", current_time);
     h_time_new.save(filename);
-    Hermes::Mixins::Loggable::Static::info("Solution at time %g saved to file %s.", current_time, filename);
+    Hermes::Mixins::Loggable::static_info("Solution at time %g saved to file %s.", current_time, filename);
 
     // Save solution for the next time step.
     h_time_prev.copy(&h_time_new);

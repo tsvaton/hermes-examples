@@ -104,13 +104,13 @@ int main(int argc, char* args[])
   int as = 1; bool done = false;
   do
   {
-    Hermes::Mixins::Loggable::Static::info("---- Adaptivity step %d:", as);
+    Hermes::Mixins::Loggable::static_info("---- Adaptivity step %d:", as);
 
     // Construct globally refined reference mesh
     // and setup reference space.
     Space<double>* ref_space = Space<double>::construct_refined_space(&space);
 
-    Hermes::Mixins::Loggable::Static::info("Solving on reference mesh.");
+    Hermes::Mixins::Loggable::static_info("Solving on reference mesh.");
 
     // Initialize the FE problem.
     DiscreteProblem<double>* dp = new DiscreteProblem<double>(&wf, ref_space);
@@ -121,16 +121,16 @@ int main(int argc, char* args[])
     LinearMatrixSolver<double>* solver = create_linear_solver<double>( matrix, rhs);
 
     // Assemble the linear problem.
-    Hermes::Mixins::Loggable::Static::info("Assembling (ndof: %d).", Space<double>::get_num_dofs(ref_space));
+    Hermes::Mixins::Loggable::static_info("Assembling (ndof: %d).", Space<double>::get_num_dofs(ref_space));
     dp->assemble(matrix, rhs);
 
     // Solve the linear system. If successful, obtain the solution.
-    Hermes::Mixins::Loggable::Static::info("Solving.");
+    Hermes::Mixins::Loggable::static_info("Solving.");
     if(solver->solve()) Solution<double>::vector_to_solution(solver->get_sln_vector(), ref_space, &ref_sln);
     else throw Hermes::Exceptions::Exception("Matrix solver failed.\n");
     
     // Project the fine mesh solution onto the coarse mesh.
-    Hermes::Mixins::Loggable::Static::info("Projecting reference solution on coarse mesh.");
+    Hermes::Mixins::Loggable::static_info("Projecting reference solution on coarse mesh.");
     OGProjection<double> ogProjection; ogProjection.project_global(&space, &ref_sln, &sln, HERMES_L2_NORM);  
 
     // Time measurement.
@@ -144,12 +144,12 @@ int main(int argc, char* args[])
     cpu_time.tick(Hermes::Mixins::TimeMeasurable::HERMES_SKIP);
 
     // Calculate element errors and total error estimate.
-    Hermes::Mixins::Loggable::Static::info("Calculating error estimate."); 
+    Hermes::Mixins::Loggable::static_info("Calculating error estimate."); 
     Adapt<double>* adaptivity = new Adapt<double>(&space);
     double err_est_rel = adaptivity->calc_err_est(&sln, &ref_sln) * 100;
  
     // Report results.
-    Hermes::Mixins::Loggable::Static::info("ndof_coarse: %d, ndof_fine: %d, err_est_rel: %g%%", 
+    Hermes::Mixins::Loggable::static_info("ndof_coarse: %d, ndof_fine: %d, err_est_rel: %g%%", 
          Space<double>::get_num_dofs(&space), Space<double>::get_num_dofs(ref_space), err_est_rel);
 
     // Time measurement.
@@ -165,7 +165,7 @@ int main(int argc, char* args[])
     if (err_est_rel < ERR_STOP) done = true;
     else 
     {
-      Hermes::Mixins::Loggable::Static::info("Adapting the coarse mesh.");
+      Hermes::Mixins::Loggable::static_info("Adapting the coarse mesh.");
       done = adaptivity->adapt(&selector, THRESHOLD, STRATEGY, MESH_REGULARITY);
 
       if (Space<double>::get_num_dofs(&space) >= NDOF_STOP) 
@@ -189,7 +189,7 @@ int main(int argc, char* args[])
   }
   while (done == false);
 
-  Hermes::Mixins::Loggable::Static::info("Total running time: %g s", cpu_time.accumulated());
+  Hermes::Mixins::Loggable::static_info("Total running time: %g s", cpu_time.accumulated());
   
   // Wait for keyboard or mouse input.
   View::wait();

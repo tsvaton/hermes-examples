@@ -119,7 +119,7 @@ void ConvergenceTable::save(const char* filename) const
   }
   
   fclose(f);
-  Hermes::Mixins::Loggable::Static::info("Convergence table saved to file '%s'.", filename);
+  Hermes::Mixins::Loggable::static_info("Convergence table saved to file '%s'.", filename);
 }
 
 std::string itos(const unsigned int i)

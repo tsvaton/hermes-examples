@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
   double K_squared = Hermes::sqr(OMEGA/M_PI) * (OMEGA - 2) / (1 - OMEGA);
   if (K_squared <= 0) throw Hermes::Exceptions::Exception("Wrong choice of omega, K_squared < 0!");
   double K_norm_coeff = std::sqrt(K_squared) / std::sqrt(Hermes::sqr(K_x) + Hermes::sqr(K_y));
-  Hermes::Mixins::Loggable::Static::info("Wave number K = %g", std::sqrt(K_squared));
+  Hermes::Mixins::Loggable::static_info("Wave number K = %g", std::sqrt(K_squared));
   K_x *= K_norm_coeff;
   K_y *= K_norm_coeff;
 
@@ -94,9 +94,9 @@ int main(int argc, char* argv[])
 
   // Choose a Butcher's table or define your own.
   ButcherTable bt(butcher_table);
-  if (bt.is_explicit()) Hermes::Mixins::Loggable::Static::info("Using a %d-stage explicit R-K method.", bt.get_size());
-  if (bt.is_diagonally_implicit()) Hermes::Mixins::Loggable::Static::info("Using a %d-stage diagonally implicit R-K method.", bt.get_size());
-  if (bt.is_fully_implicit()) Hermes::Mixins::Loggable::Static::info("Using a %d-stage fully implicit R-K method.", bt.get_size());
+  if (bt.is_explicit()) Hermes::Mixins::Loggable::static_info("Using a %d-stage explicit R-K method.", bt.get_size());
+  if (bt.is_diagonally_implicit()) Hermes::Mixins::Loggable::static_info("Using a %d-stage diagonally implicit R-K method.", bt.get_size());
+  if (bt.is_fully_implicit()) Hermes::Mixins::Loggable::static_info("Using a %d-stage fully implicit R-K method.", bt.get_size());
 
   // Load the mesh.
   Mesh mesh;
@@ -131,7 +131,7 @@ int main(int argc, char* argv[])
   Hermes::vector<Space<double> *> spaces = Hermes::vector<Space<double> *>(&E_space, &H_space, &P_space);
   Hermes::vector<const Space<double> *> spaces_mutable = Hermes::vector<const Space<double> *>(&E_space, &H_space, &P_space);
   int ndof = Space<double>::get_num_dofs(spaces);
-  Hermes::Mixins::Loggable::Static::info("ndof = %d.", ndof);
+  Hermes::Mixins::Loggable::static_info("ndof = %d.", ndof);
   
   // Initialize views.
   ScalarView E1_view("Solution E1", new WinGeom(0, 0, 400, 350));
@@ -175,7 +175,7 @@ int main(int argc, char* argv[])
   do
   {
     // Perform one Runge-Kutta time step according to the selected Butcher's table.
-    Hermes::Mixins::Loggable::Static::info("Runge-Kutta time step (t = %g s, time_step = %g s, stages: %d).", 
+    Hermes::Mixins::Loggable::static_info("Runge-Kutta time step (t = %g s, time_step = %g s, stages: %d).", 
          current_time, time_step, bt.get_size());
     bool freeze_jacobian = false;
     bool block_diagonal_jacobian = false;
