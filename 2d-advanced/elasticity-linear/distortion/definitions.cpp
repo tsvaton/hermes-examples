@@ -674,7 +674,7 @@ MeshFunction<double>* ExactSolutionTrEo::clone() const
 }
 
 // Custom filter S11
-void CustomFilterS11::filter_fn(int n, double* x, double* y, Hermes::vector<double*> values, Hermes::vector<double*> dx, Hermes::vector<double*> dy,
+void CustomFilterS11::filter_fn(int n, double* x, double* y, Hermes::vector<const double*> values, Hermes::vector<const double*> dx, Hermes::vector<const double*> dy,
                       double* out, double* outdx, double* outdy)
 {
   for (int i = 0; i < n; i++)
@@ -686,7 +686,7 @@ void CustomFilterS11::filter_fn(int n, double* x, double* y, Hermes::vector<doub
 }
 
 // Custom filter S12
-void CustomFilterS12::filter_fn(int n, double* x, double* y, Hermes::vector<double*> values, Hermes::vector<double*> dx, Hermes::vector<double*> dy,
+void CustomFilterS12::filter_fn(int n, double* x, double* y, Hermes::vector<const double*> values, Hermes::vector<const double*> dx, Hermes::vector<const double*> dy,
                       double* out, double* outdx, double* outdy)
 {
   for (int i = 0; i < n; i++)
@@ -698,7 +698,7 @@ void CustomFilterS12::filter_fn(int n, double* x, double* y, Hermes::vector<doub
 }
 
 // Custom filter S22
-void CustomFilterS22::filter_fn(int n, double* x, double* y, Hermes::vector<double*> values, Hermes::vector<double*> dx, Hermes::vector<double*> dy,
+void CustomFilterS22::filter_fn(int n, double* x, double* y, Hermes::vector<const double*> values, Hermes::vector<const double*> dx, Hermes::vector<const double*> dy,
                       double* out, double* outdx, double* outdy)
 {
   for (int i = 0; i < n; i++)
@@ -710,7 +710,7 @@ void CustomFilterS22::filter_fn(int n, double* x, double* y, Hermes::vector<doub
 }
 
 // Custom filter S33
-void CustomFilterS33::filter_fn(int n, double* x, double* y, Hermes::vector<double*> values, Hermes::vector<double*> dx, Hermes::vector<double*> dy,
+void CustomFilterS33::filter_fn(int n, double* x, double* y, Hermes::vector<const double*> values, Hermes::vector<const double*> dx, Hermes::vector<const double*> dy,
                       double* out, double* outdx, double* outdy)
 {
   for (int i = 0; i < n; i++)
@@ -722,7 +722,7 @@ void CustomFilterS33::filter_fn(int n, double* x, double* y, Hermes::vector<doub
 }
 
 // Custom filter von Mises (with distortions)
-void CustomFilter_vM::filter_fn(int n, double* x, double* y, Hermes::vector<double*> values, Hermes::vector<double*> dx, Hermes::vector<double*> dy,
+void CustomFilter_vM::filter_fn(int n, double* x, double* y, Hermes::vector<const double*> values, Hermes::vector<const double*> dx, Hermes::vector<const double*> dy,
                       double* out, double* outdx, double* outdy)
 {
   for (int i = 0; i < n; i++)
