@@ -172,11 +172,11 @@ int main(int argc, char* argv[])
     // Construct globally refined reference mesh and setup reference space.
     Mesh::ReferenceMeshCreator ref_mesh_creator(mesh);
     MeshSharedPtr ref_mesh = ref_mesh_creator.create_ref_mesh();
-    Space<double>::ReferenceSpaceCreator u_ref_space_creator(u_space, ref_mesh);
+    Space<double>::ReferenceSpaceCreator u_ref_space_creator(u_space, ref_mesh, 0);
     SpaceSharedPtr<double> u_ref_space = u_ref_space_creator.create_ref_space();
-    Space<double>::ReferenceSpaceCreator v_ref_space_creator(v_space, ref_mesh);
+    Space<double>::ReferenceSpaceCreator v_ref_space_creator(v_space, ref_mesh, 0);
     SpaceSharedPtr<double> v_ref_space = v_ref_space_creator.create_ref_space();
-    Space<double>::ReferenceSpaceCreator p_ref_space_creator(p_space, ref_mesh);
+    Space<double>::ReferenceSpaceCreator p_ref_space_creator(p_space, ref_mesh, 0);
     SpaceSharedPtr<double> p_ref_space = p_ref_space_creator.create_ref_space();
 /*
     MeshView mvu("Mesh u", new WinGeom(0, 0, 580, 400));
@@ -275,8 +275,7 @@ int main(int argc, char* argv[])
     // Increase counter.
     as++;
   }
-  while (as<2); // ! ! ! attention this is to control the number of iterations to be replaced by the line bottom
-//  while (done == false);
+  while (done == false);
 
   Hermes::Mixins::Loggable::Static::info("Total running time: %g s", cpu_time.accumulated());
 
@@ -308,11 +307,11 @@ int main(int argc, char* argv[])
     viewU.show(u_sln);
     viewV.show(v_sln);
     viewP.show(p_sln);
-    viewS11.show(S11, HERMES_EPS_HIGH, H2D_FN_VAL_0, u_sln, v_sln, 1.0);
-    viewS12.show(S12, HERMES_EPS_HIGH, H2D_FN_VAL_0, u_sln, v_sln, 1.0);
-    viewS22.show(S22, HERMES_EPS_HIGH, H2D_FN_VAL_0, u_sln, v_sln, 1.0);
-    viewS33.show(S33, HERMES_EPS_HIGH, H2D_FN_VAL_0, u_sln, v_sln, 1.0);
-    view_vM.show(vM, HERMES_EPS_HIGH, H2D_FN_VAL_0, u_sln, v_sln, 1.0);
+    viewS11.show(S11, H2D_FN_VAL_0, u_sln, v_sln, 1.0);
+    viewS12.show(S12, H2D_FN_VAL_0, u_sln, v_sln, 1.0);
+    viewS22.show(S22, H2D_FN_VAL_0, u_sln, v_sln, 1.0);
+    viewS33.show(S33, H2D_FN_VAL_0, u_sln, v_sln, 1.0);
+    view_vM.show(vM, H2D_FN_VAL_0, u_sln, v_sln, 1.0);
   }
 
   // Wait for the view to be closed.

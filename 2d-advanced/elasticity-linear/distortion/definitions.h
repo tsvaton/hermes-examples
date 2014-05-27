@@ -459,7 +459,7 @@ virtual MeshFunction<double>* clone() const
   return filter;
 }
 private:
-virtual void filter_fn(int n, double* x, double* y, Hermes::vector<double *> values, Hermes::vector<double *> dx, Hermes::vector<double *> dy, double* rslt, double* rslt_dx, double* rslt_dy);
+  virtual void filter_fn(int n, double* x, double* y, Hermes::vector<const double *> values, Hermes::vector<const double *> dx, Hermes::vector<const double *> dy, double* rslt, double* rslt_dx, double* rslt_dy);
 double mu, lambda;
 CustomEo11* Eo11d;
 CustomEo12* Eo12d;
@@ -485,7 +485,7 @@ virtual MeshFunction<double>* clone() const
   return filter;
 }
 private:
-virtual void filter_fn(int n, double* x, double* y, Hermes::vector<double *> values, Hermes::vector<double *> dx, Hermes::vector<double *> dy, double* rslt, double* rslt_dx, double* rslt_dy);
+  virtual void filter_fn(int n, double* x, double* y, Hermes::vector<const double *> values, Hermes::vector<const double *> dx, Hermes::vector<const double *> dy, double* rslt, double* rslt_dx, double* rslt_dy);
 double mu, lambda;
 CustomEo11* Eo11d;
 CustomEo12* Eo12d;
@@ -511,7 +511,7 @@ virtual MeshFunction<double>* clone() const
   return filter;
 }
 private:
-virtual void filter_fn(int n, double* x, double* y, Hermes::vector<double *> values, Hermes::vector<double *> dx, Hermes::vector<double *> dy, double* rslt, double* rslt_dx, double* rslt_dy);
+  virtual void filter_fn(int n, double* x, double* y, Hermes::vector<const double *> values, Hermes::vector<const double *> dx, Hermes::vector<const double *> dy, double* rslt, double* rslt_dx, double* rslt_dy);
 double mu, lambda;
 CustomEo11* Eo11d;
 CustomEo12* Eo12d;
@@ -537,7 +537,7 @@ virtual MeshFunction<double>* clone() const
   return filter;
 }
 private:
-virtual void filter_fn(int n, double* x, double* y, Hermes::vector<double *> values, Hermes::vector<double *> dx, Hermes::vector<double *> dy, double* rslt, double* rslt_dx, double* rslt_dy);
+  virtual void filter_fn(int n, double* x, double* y, Hermes::vector<const double *> values, Hermes::vector<const double *> dx, Hermes::vector<const double *> dy, double* rslt, double* rslt_dx, double* rslt_dy);
 double mu, lambda;
 CustomEo11* Eo11d;
 CustomEo12* Eo12d;
@@ -563,7 +563,7 @@ virtual MeshFunction<double>* clone() const
   return filter;
 }
 private:
-virtual void filter_fn(int n, double* x, double* y, Hermes::vector<double *> values, Hermes::vector<double *> dx, Hermes::vector<double *> dy, double* rslt, double* rslt_dx, double* rslt_dy);
+  virtual void filter_fn(int n, double* x, double* y, Hermes::vector<const double *> values, Hermes::vector<const double *> dx, Hermes::vector<const double *> dy, double* rslt, double* rslt_dx, double* rslt_dy);
 double mu, lambda;
 CustomEo11* Eo11d;
 CustomEo12* Eo12d;
